@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "Dholuo for Noela",
+  "short_name": "Dholuo",
+  "description": "Learn Dholuo (Luo), starting with Kenyan Luo.",
+  "lang": "en",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#f4f6fb",
+  "theme_color": "#102a63",
+  "categories": ["education"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Practice", "short_name": "Practice", "url": "./index.html?tab=Practice" },
+    { "name": "Explore", "short_name": "Explore", "url": "./index.html?tab=Explore" }
+  ]
+}

@@ -1,0 +1,210 @@
+/* Base: reset, page shell, top bar, bottom tab bar. */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(64px + env(safe-area-inset-top,0px));
+}
+
+html,body {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 var(--font);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  touch-action: manipulation;
+  padding: calc(60px + env(safe-area-inset-top,0px)) env(safe-area-inset-right,0px) calc(92px + env(safe-area-inset-bottom,0px)) env(safe-area-inset-left,0px);
+}
+
+main {
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  min-height: var(--tap);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input {
+  font-size: 16px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+h1,h2,h3 {
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+}
+
+.icon {
+  flex: none;
+  vertical-align: middle;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-title {
+  margin: 28px 2px 12px;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 32px 16px 4px;
+  text-align: center;
+  font-size: .82rem;
+  color: var(--muted);
+}
+
+.footer .icon {
+  color: var(--accent);
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  padding-top: env(safe-area-inset-top,0px);
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner {
+  max-width: var(--col);
+  height: 56px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font: 700 1.3rem var(--serif);
+  letter-spacing: .01em;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  padding: 4px 8px calc(4px + env(safe-area-inset-bottom,0px));
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+}
+
+.tab {
+  position: relative;
+  flex: 1;
+  max-width: 112px;
+  min-height: 58px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: .7rem;
+  font-weight: 600;
+}
+
+.tab.on {
+  color: var(--primary);
+}
+
+.tab.on::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 30%;
+  right: 30%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--primary);
+}
+
+@media (max-width:360px) {
+  .tab {
+    font-size: .64rem;
+  }
+  .banner h1 {
+    font-size: 1.9rem;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  * {
+    animation: none!important;
+    transition: none!important;
+  }
+}

@@ -1,0 +1,122 @@
+/* Phone extras: the leave-lesson sheet, toast messages, install banner and small-screen tuning. */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10,16,32,.55);
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+.sheet-panel {
+  width: 100%;
+  max-width: var(--col);
+  padding: 24px 20px calc(20px + env(safe-area-inset-bottom,0px));
+  background: var(--surface);
+  border-radius: 22px 22px 0 0;
+  animation: rise .2s ease-out;
+}
+
+.sheet-panel h3 {
+  font: 700 1.3rem var(--serif);
+}
+
+.sheet-panel p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.sheet-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(86px + env(safe-area-inset-bottom,0px));
+  z-index: 90;
+  max-width: calc(100% - 32px);
+  padding: 12px 18px;
+  transform: translateX(-50%);
+  background: var(--navy);
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+.install-banner {
+  margin-top: 12px;
+  border-color: var(--primary);
+}
+
+.link-btn {
+  display: block;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.ok-text {
+  color: var(--success);
+  font-weight: 700;
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(28px);
+    opacity: 0;
+  }
+}
+
+/* Short screens and landscape phones: keep the lesson usable. */
+@media (max-height:520px) {
+  .prompt {
+    font-size: 1.8rem;
+  }
+  .banner {
+    padding: 16px 18px;
+  }
+  .lesson-body {
+    padding-top: 6px;
+  }
+}
+
+/* Small phones. */
+@media (max-width:360px) {
+  main {
+    padding: 0 12px;
+  }
+  .metric b {
+    font-size: 1.2rem;
+  }
+  .prompt {
+    font-size: 2.1rem;
+  }
+}
+
+/* Touch screens: show pressed state instead of hover. */
+@media (hover:none) {
+  .unit:active,
+  .btn:active,
+  .option:active,
+  .tile:active {
+    filter: brightness(.96);
+  }
+}
