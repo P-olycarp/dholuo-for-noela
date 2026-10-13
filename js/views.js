@@ -1,10 +1,11 @@
 /* views.js — builds the HTML for the top bar and each of the five tabs. */
 
-const APP_VERSION = "2.3"; // shown in the footer so you can tell which copy you are looking at
+const APP_VERSION = "2.4"; // shown in the footer so you can tell which copy you are looking at
 const FALLBACK_TAB = "Journey";
 let currentTab = FALLBACK_TAB;
 let installPrompt = null; // set by app.js when the browser offers "install"
-let offlineReady = false; // set by app.js once the service worker has saved the app
+let swStatus = "checking"; // set by app.js: checking, installing, ready or failed
+let swError = "";          // the reason, if the offline copy failed
 
 const isStandalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
 const isLocalhost = () => ["localhost", "127.0.0.1"].includes(location.hostname);
@@ -107,6 +108,29 @@ function cultureView() {
     <h2 class="section-title">Regional forms</h2><div class="card">${dialects}</div>`;
 }
 
+function swLabel() {
+  if (swStatus === "ready") return "Ready";
+  if (swStatus === "failed") return "Failed";
+  if (swStatus === "unsupported") return "Not supported";
+  return isLocalhost() ? "Off while testing" : "Preparing…";
+}
+
+/** Shows exactly what this phone can do, so install problems are easy to explain. */
+function installCheckPanel() {
+  const ua = navigator.userAgent;
+  const browser = /iphone|ipad|ipod/i.test(ua) ? "iPhone / iPad" : /android/i.test(ua) ? "Android" : "Computer";
+  const row = (label, value, good) => `<div class="setting"><span>${label}</span><span class="${good ? "ok-text" : "muted"}">${value}</span></div>`;
+  const detail = swError ? `<p style="margin:8px 0 0;font-size:.85rem">Reason: ${swError}</p>` : "";
+  return `<div class="card"><h3>Install check</h3>
+    ${row("Device", browser, true)}
+    ${row("Secure (https)", location.protocol === "https:" ? "Yes" : "No", location.protocol === "https:")}
+    ${row("Offline copy", swLabel(), swStatus === "ready")}
+    ${row("Install prompt", installPrompt ? "Available" : "Not offered", !!installPrompt)}
+    ${row("Opened as an app", isStandalone() ? "Yes" : "No", isStandalone())}
+    ${detail}
+    <button class="btn" style="margin-top:14px" data-action="reset-offline">Reset offline copy</button></div>`;
+}
+
 function installPanel() {
   if (isStandalone()) return "";
   if (installPrompt) {
@@ -127,7 +151,7 @@ function settingsPanel() {
     <div class="setting"><span>Sounds</span><button class="switch" role="switch" aria-checked="${sound}" aria-label="Sounds" data-action="toggle" data-v="sound"></button></div>
     <div class="setting"><span>Vibration</span><button class="switch" role="switch" aria-checked="${haptics}" aria-label="Vibration" data-action="toggle" data-v="haptics"></button></div>
     <div class="setting"><span>Theme</span><div class="seg">${themes}</div></div>
-    <div class="setting"><span>Works offline</span><span class="${offlineReady ? "ok-text" : "muted"}">${offlineReady ? "Ready" : isLocalhost() ? "Off while testing" : "Preparing…"}</span></div></div>`;
+    <div class="setting"><span>Works offline</span><span class="${swStatus === "ready" ? "ok-text" : "muted"}">${swLabel()}</span></div></div>`;
 }
 
 let loveIndex = 0;
@@ -143,7 +167,7 @@ function youView() {
       <p style="margin:10px 0 0;font-size:.85rem">From general knowledge, not the dictionary. Please check with a Luo speaker.</p></div>
     <div class="card"><button class="btn primary" data-action="love">Another note</button>
       <p id="love-message" style="margin:14px 0 0;text-align:center">${LOVE[loveIndex]}</p></div>
-    ${installPanel()}${settingsPanel()}`;
+    ${installPanel()}${installCheckPanel()}${settingsPanel()}`;
 }
 
 const TAB_VIEWS = { Journey: journeyView, Practice: practiceView, Explore: exploreView, Culture: cultureView, "For You": youView };

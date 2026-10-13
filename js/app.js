@@ -9,7 +9,9 @@ const actions = {
     startLesson(started.length >= 4 ? started : ALL);
   },
   surprise: () => startLesson(ALL),
-  close: () => quitLesson(),
+  close: () => requestQuit(),
+  stay: () => hideSheet(),
+  leave: () => { if (session) session.leaving = true; hideSheet(); quitLesson(); },
   next: () => nextQuestion(),
   pick: (d) => chooseOption(Number(d.k)),
   check: () => checkAnswer(),
@@ -31,6 +33,20 @@ const actions = {
     installPrompt = null;
     renderApp(true);
   },
+  "reset-offline": async () => {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((reg) => reg.unregister()));
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    } catch (error) { /* ignore */ }
+    showToast("Offline copy cleared. Reloading…");
+    setTimeout(() => location.reload(), 700);
+  },
+  "dismiss-install": () => {
+    try { localStorage.setItem("dh-install-dismissed", "1"); } catch (error) { /* ignore */ }
+    renderApp(true);
+  },
 };
 
 document.addEventListener("click", (event) => {
@@ -49,6 +65,26 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && typing && event.target.value.trim() && session && !session.locked) checkAnswer();
 });
 
+/* ---------- leaving a lesson, and small messages ---------- */
+
+const midLesson = () => session && session.index > 0 && session.index < session.queue.length;
+const showSheet = () => { $("#sheet").hidden = false; };
+const hideSheet = () => { $("#sheet").hidden = true; };
+
+/** Asks before leaving a lesson that is half done. */
+function requestQuit() {
+  if (midLesson()) showSheet();
+  else quitLesson();
+}
+
+function showToast(text) {
+  const toast = $("#toast");
+  toast.textContent = text;
+  toast.hidden = false;
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => { toast.hidden = true; }, 3500);
+}
+
 /* ---------- phone polish ---------- */
 
 /** Size the lesson to the *visible* area so the on-screen keyboard never covers the buttons. */
@@ -65,7 +101,17 @@ function applyTheme() {
   else document.documentElement.dataset.theme = theme;
 }
 
-window.addEventListener("popstate", () => { if (session) closeLesson(); }); // Android Back button
+// Android Back button: ask first if the lesson is half done.
+window.addEventListener("popstate", () => {
+  if (!session) return;
+  if (midLesson() && !session.leaving) {
+    try { history.pushState({ lesson: true }, ""); } catch (error) { /* ignore */ }
+    showSheet();
+  } else {
+    hideSheet();
+    closeLesson();
+  }
+});
 window.addEventListener("resize", syncViewport);
 if (window.visualViewport) {
   visualViewport.addEventListener("resize", syncViewport);
@@ -77,22 +123,54 @@ window.addEventListener("beforeinstallprompt", (event) => {
   installPrompt = event;
   if (currentTab === "For You") renderApp(true);
 });
-window.addEventListener("appinstalled", () => { installPrompt = null; renderApp(true); });
+window.addEventListener("appinstalled", () => {
+  installPrompt = null;
+  showToast("Installed. Open Dholuo from your home screen.");
+  renderApp(true);
+});
 
 /* ---------- start ---------- */
 
 loadState();
 rollDay();
+const startTab = new URLSearchParams(location.search).get("tab"); // home-screen shortcuts open a tab directly
+if (TAB_VIEWS[startTab]) currentTab = startTab;
 applyTheme();
 syncViewport();
 renderApp();
 
-if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+const refreshSettings = () => { if (currentTab === "For You" && !session) renderApp(true); };
+
+if (!("serviceWorker" in navigator)) {
+  swStatus = "unsupported";
+} else if (location.protocol.startsWith("http")) {
   if (["localhost", "127.0.0.1"].includes(location.hostname)) {
     // While you are editing on your own computer, never keep an old copy of the app around.
     navigator.serviceWorker.getRegistrations().then((list) => list.forEach((reg) => reg.unregister()));
     if (window.caches) caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
   } else {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.register("sw.js", { scope: "./" })
+      .then((registration) => {
+        swStatus = "installing";
+        const watch = (worker) => worker && worker.addEventListener("statechange", () => {
+          if (worker.state === "redundant") {
+            swStatus = "failed";
+            swError = "The browser did not accept the offline files.";
+            refreshSettings();
+          }
+        });
+        watch(registration.installing);
+        registration.addEventListener("updatefound", () => watch(registration.installing));
+      })
+      .catch((error) => {
+        swStatus = "failed";
+        swError = error && error.message ? error.message : "Registration failed.";
+        refreshSettings();
+      });
+    navigator.serviceWorker.ready.then(() => {
+      swStatus = "ready";
+      swError = "";
+      refreshSettings();
+    });
   }
 }
