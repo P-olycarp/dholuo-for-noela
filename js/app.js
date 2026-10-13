@@ -43,6 +43,22 @@ const actions = {
     showToast("Offline copy cleared. Reloading…");
     setTimeout(() => location.reload(), 700);
   },
+  "welcome-start": () => {
+    state.welcomed = true;
+    saveState();
+    $("#welcome").hidden = true;
+    haptic(10);
+    renderApp();
+  },
+  "reset-progress": () => { $("#reset-sheet").hidden = false; },
+  "reset-cancel": () => { $("#reset-sheet").hidden = true; },
+  "reset-confirm": () => {
+    $("#reset-sheet").hidden = true;
+    resetProgress();
+    currentTab = "Journey";
+    renderApp();
+    showWelcomeIfNeeded();
+  },
   "dismiss-install": () => {
     try { localStorage.setItem("dh-install-dismissed", "1"); } catch (error) { /* ignore */ }
     renderApp(true);
@@ -83,6 +99,13 @@ function showToast(text) {
   toast.hidden = false;
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => { toast.hidden = true; }, 3500);
+}
+
+/** Shows the welcome screen once, on a brand-new device. */
+function showWelcomeIfNeeded() {
+  if (state.welcomed) return;
+  $("#welcome").innerHTML = welcomeHtml();
+  $("#welcome").hidden = false;
 }
 
 /* ---------- phone polish ---------- */
@@ -138,6 +161,8 @@ if (TAB_VIEWS[startTab]) currentTab = startTab;
 applyTheme();
 syncViewport();
 renderApp();
+
+showWelcomeIfNeeded();
 
 const refreshSettings = () => { if (currentTab === "For You" && !session) renderApp(true); };
 

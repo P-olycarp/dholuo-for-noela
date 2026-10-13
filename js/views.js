@@ -1,6 +1,6 @@
 /* views.js — builds the HTML for the top bar and each of the five tabs. */
 
-const APP_VERSION = "2.5"; // shown in the footer so you can tell which copy you are looking at
+const APP_VERSION = "2.6"; // shown in the footer so you can tell which copy you are looking at
 const FALLBACK_TAB = "Journey";
 let currentTab = FALLBACK_TAB;
 let installPrompt = null; // set by app.js when the browser offers "install"
@@ -108,6 +108,22 @@ function cultureView() {
     <h2 class="section-title">Regional forms</h2><div class="card">${dialects}</div>`;
 }
 
+function welcomeHtml() {
+  return `<div class="welcome-card">
+    <div class="eyebrow">${icon("heart", 14)} Made with love, from ${FROM}</div>
+    <h1>Welcome, Noela</h1>
+    <p class="welcome-lead">Your own place to learn Dholuo, one small step at a time.</p>
+    <ul class="welcome-list">
+      <li>${icon("map", 20)}<span><b>${CATS.length} units</b> from numbers and greetings to full sentences</span></li>
+      <li>${icon("target", 20)}<span><b>Short lessons</b> of about five minutes</span></li>
+      <li>${icon("download", 20)}<span><b>Works offline</b> once it is installed on your phone</span></li>
+    </ul>
+    <div class="note-card"><p>${LOVE[0]}</p><div class="sig">${FROM}</div></div>
+    <button class="btn primary" data-action="welcome-start">Start learning</button>
+    <p class="welcome-foot">Everything starts at zero. Your streak begins with your first lesson.</p>
+  </div>`;
+}
+
 function swLabel() {
   if (swStatus === "ready") return "Ready";
   if (swStatus === "failed") return "Failed";
@@ -151,7 +167,8 @@ function settingsPanel() {
     <div class="setting"><span>Sounds</span><button class="switch" role="switch" aria-checked="${sound}" aria-label="Sounds" data-action="toggle" data-v="sound"></button></div>
     <div class="setting"><span>Vibration</span><button class="switch" role="switch" aria-checked="${haptics}" aria-label="Vibration" data-action="toggle" data-v="haptics"></button></div>
     <div class="setting"><span>Theme</span><div class="seg">${themes}</div></div>
-    <div class="setting"><span>Works offline</span><span class="${swStatus === "ready" ? "ok-text" : "muted"}">${swLabel()}</span></div></div>`;
+    <div class="setting"><span>Works offline</span><span class="${swStatus === "ready" ? "ok-text" : "muted"}">${swLabel()}</span></div>
+    <div class="setting"><span>Progress on this device</span><button class="link-btn" style="min-height:36px;margin:0" data-action="reset-progress">Start over</button></div></div>`;
 }
 
 let loveIndex = 0;

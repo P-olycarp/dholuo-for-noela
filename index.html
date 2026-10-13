@@ -15,11 +15,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-180.png">
-  <link rel="stylesheet" href="css/tokens.css?v=2.5">
-  <link rel="stylesheet" href="css/base.css?v=2.5">
-  <link rel="stylesheet" href="css/components.css?v=2.5">
-  <link rel="stylesheet" href="css/lesson.css?v=2.5">
-  <link rel="stylesheet" href="css/mobile.css?v=2.5">
+  <link rel="stylesheet" href="css/tokens.css?v=2.6">
+  <link rel="stylesheet" href="css/base.css?v=2.6">
+  <link rel="stylesheet" href="css/components.css?v=2.6">
+  <link rel="stylesheet" href="css/lesson.css?v=2.6">
+  <link rel="stylesheet" href="css/mobile.css?v=2.6">
 </head>
 <body>
   <header id="topbar" class="topbar"></header>
@@ -49,18 +49,30 @@
       </div>
     </div>
   </div>
+  <!-- First-run welcome: shown once on a new device, controlled by js/app.js -->
+  <div id="welcome" class="welcome" role="dialog" aria-modal="true" aria-label="Welcome" hidden></div>
+  <div id="reset-sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="reset-title" hidden>
+    <div class="sheet-panel">
+      <h3 id="reset-title">Start over?</h3>
+      <p>This clears XP, streak and learned words on this device. It cannot be undone.</p>
+      <div class="sheet-actions">
+        <button class="btn" data-action="reset-cancel">Keep my progress</button>
+        <button class="btn danger" data-action="reset-confirm">Erase and start over</button>
+      </div>
+    </div>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <noscript>Please turn on JavaScript to use this app.</noscript>
 
   <!-- Order matters: data, state, helpers, features, views, then the app bootstrap. -->
-  <script src="js/data.js?v=2.5"></script>
-  <script src="js/icons.js?v=2.5"></script>
-  <script src="js/state.js?v=2.5"></script>
-  <script src="js/utils.js?v=2.5"></script>
-  <script src="js/lesson.js?v=2.5"></script>
-  <script src="js/feed.js?v=2.5"></script>
-  <script src="js/views.js?v=2.5"></script>
-  <script src="js/app.js?v=2.5"></script>
+  <script src="js/data.js?v=2.6"></script>
+  <script src="js/icons.js?v=2.6"></script>
+  <script src="js/state.js?v=2.6"></script>
+  <script src="js/utils.js?v=2.6"></script>
+  <script src="js/lesson.js?v=2.6"></script>
+  <script src="js/feed.js?v=2.6"></script>
+  <script src="js/views.js?v=2.6"></script>
+  <script src="js/app.js?v=2.6"></script>
 </body>
 </html>

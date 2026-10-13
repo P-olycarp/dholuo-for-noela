@@ -1,6 +1,6 @@
 /* Service worker: lets the app install and open offline. Saved files show instantly, then refresh in the background.
  * Bump CACHE whenever you change any file, so phones pick up the update on their next visit. */
-const CACHE = "dholuo-v13";
+const CACHE = "dholuo-v14";
 const FILES = [
   "./", "index.html", "manifest.webmanifest",
   "icon-180.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png",
