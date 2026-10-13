@@ -1,6 +1,6 @@
 /* views.js — builds the HTML for the top bar and each of the five tabs. */
 
-const APP_VERSION = "2.4"; // shown in the footer so you can tell which copy you are looking at
+const APP_VERSION = "2.5"; // shown in the footer so you can tell which copy you are looking at
 const FALLBACK_TAB = "Journey";
 let currentTab = FALLBACK_TAB;
 let installPrompt = null; // set by app.js when the browser offers "install"

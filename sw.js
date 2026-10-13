@@ -1,6 +1,6 @@
 /* Service worker: lets the app install and open offline. Saved files show instantly, then refresh in the background.
  * Bump CACHE whenever you change any file, so phones pick up the update on their next visit. */
-const CACHE = "dholuo-v12";
+const CACHE = "dholuo-v13";
 const FILES = [
   "./", "index.html", "manifest.webmanifest",
   "icon-180.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png",
@@ -10,7 +10,7 @@ const FILES = [
 
 self.addEventListener("install", (event) => {
   // Save each file on its own, so one problem file can never stop the app from installing.
-  event.waitUntil(caches.open(CACHE).then((cache) => Promise.allSettled(FILES.map((file) => cache.add(file)))));
+  event.waitUntil(caches.open(CACHE).then((cache) => Promise.allSettled(FILES.map((file) => cache.add(new Request(file, { cache: "reload" }))))));
   self.skipWaiting();
 });
 
@@ -28,7 +28,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const saved = await cache.match(request, { ignoreSearch: true });
-      const fresh = fetch(request)
+      const fresh = fetch(request, { cache: "no-cache" })
         .then((response) => {
           if (response.ok) cache.put(request, response.clone());
           return response;

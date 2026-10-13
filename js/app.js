@@ -152,6 +152,7 @@ if (!("serviceWorker" in navigator)) {
     navigator.serviceWorker.register("sw.js", { scope: "./" })
       .then((registration) => {
         swStatus = "installing";
+        registration.update().catch(() => {}); // always look for a newer version of the app
         const watch = (worker) => worker && worker.addEventListener("statechange", () => {
           if (worker.state === "redundant") {
             swStatus = "failed";
